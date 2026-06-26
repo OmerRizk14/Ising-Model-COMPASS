@@ -3,23 +3,10 @@ import matplotlib.pyplot as plt
 #import numba
 #from numba import njit
 from scipy.ndimage import convolve, generate_binary_structure
-
-
-# 1. temprature value
-Bj = float(input("Enter the temprature value  (recomended range: 0.1 - 4.0) : ")) # 0.2 for example
-
-# 2. Feeding the lattice with different initial conditions
-atoms_positive_charge = float(input("Enter the percentage of atoms with charge +1:  %")) # integer number
-atoms_positive_charge = atoms_positive_charge / 100
-
-# 3. Feeding the system different number of steps
-steps = int(input("Enter the number of steps: ")) # 1000000 for example
+import tkinter as tk
+from tkinter import ttk
 
 N = 50
-init_random = np.random.random((N,N))
-lattice_n = np.zeros((N,N))
-lattice_n[init_random >= atoms_positive_charge] = 1
-lattice_n[init_random < atoms_positive_charge] = -1
 
 # E/j = - collection <i,j> Qi.Qj
 
@@ -71,20 +58,67 @@ def metropolis(spin_arr, times, BJ, energy):
             
     return net_spins, net_energy
 
-spins, energies = metropolis(lattice_n, steps, Bj, get_energy(lattice_n))
 
-fig, axes = plt.subplots(1, 2, figsize=(12,4))
-ax = axes[0]
-ax.plot(spins/N**2)
-ax.set_xlabel('Algorithm Time Steps')
-ax.set_ylabel(r'Average Spin $\bar{m}$')
-ax.grid()
-ax = axes[1]
-ax.plot(energies)
-ax.set_xlabel('Algorithm Time Steps')
-ax.set_ylabel(r'Energy $E/J$')
-ax.grid()
-fig.tight_layout()
-fig.suptitle(r'Evolution of Average Spin and Energy for $\beta J=$0.7', y=1.07, size=18)
+# GUI Button Trigger Function
+def click_run_button():
+    global Bj, atoms_positive_charge, steps, lattice_n
+    
+    # Reading numbers from Tkinter Entry fields
+    Bj = float(entry_temp.get())
+    atoms_positive_charge = float(entry_charge.get()) / 100
+    steps = int(entry_steps.get())
+    
+    # Initial conditions using the values from GUI
+    init_random = np.random.random((N,N))
+    lattice_n = np.zeros((N,N))
+    lattice_n[init_random >= atoms_positive_charge] = 1
+    lattice_n[init_random < atoms_positive_charge] = -1
+    
+    # Running your functions
+    spins, energies = metropolis(lattice_n, steps, Bj, get_energy(lattice_n))
+    
+    # Plotting results (Opens in a new separate window)
+    fig, axes = plt.subplots(1, 2, figsize=(12,4))
+    ax = axes[0]
+    ax.plot(spins/N**2)
+    ax.set_xlabel('Algorithm Time Steps')
+    ax.set_ylabel(r'Average Spin $\bar{m}$')
+    ax.grid()
+    ax = axes[1]
+    ax.plot(energies)
+    ax.set_xlabel('Algorithm Time Steps')
+    ax.set_ylabel(r'Energy $E/J$')
+    ax.grid()
+    fig.tight_layout()
+    fig.suptitle(f'Evolution of Average Spin and Energy for $\\beta J=${Bj}', y=1.07, size=18)
 
-plt.show
+    plt.show()
+
+# Tkinter user interface window
+root = tk.Tk()
+root.title("Input Window")
+root.geometry("350x250")
+
+# 1. temprature value field
+ttk.Label(root, text="Enter the temprature value (0.1 - 4.0):").pack(pady=5)
+entry_temp = ttk.Entry(root)
+entry_temp.insert(0, "0.2")
+entry_temp.pack(pady=5)
+
+# 2. Percentage field
+ttk.Label(root, text="Enter the percentage of atoms with charge +1: %").pack(pady=5)
+entry_charge = ttk.Entry(root)
+entry_charge.insert(0, "55")
+entry_charge.pack(pady=5)
+
+# 3. Steps field
+ttk.Label(root, text="Enter the number of steps:").pack(pady=5)
+entry_steps = ttk.Entry(root)
+entry_steps.insert(0, "100000")
+entry_steps.pack(pady=5)
+
+# Run Button
+btn_run = ttk.Button(root, text="Run Simulation", command=click_run_button)
+btn_run.pack(pady=15)
+
+root.mainloop()
