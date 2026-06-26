@@ -13,4 +13,4 @@ This simulation helps analyze thermodynamic behaviors, phase transitions, energy
 To run this simulation locally, you need *Python 3.12* and the following libraries:
 
 ```bash
-pip install numpy scipy matplotlib
+pip install numpy scipy matplotlib Tkinter
