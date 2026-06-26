@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import numba
-from numba import njit
+#import numba
+#from numba import njit
 from scipy.ndimage import convolve, generate_binary_structure
 
 
 # 1. temprature value
-Bj = float(input("Enter the temprature value: ")) # 0.2 for example
+Bj = float(input("Enter the temprature value  (recomended range: 0.1 - 4.0) : ")) # 0.2 for example
 
 # 2. Feeding the lattice with different initial conditions
 atoms_positive_charge = float(input("Enter the percentage of atoms with charge +1:  %")) # integer number
@@ -29,7 +29,7 @@ def get_energy(lattice):
     arr = -lattice * convolve(lattice, kern, mode='constant', cval=0)
     return arr.sum()
 
-@numba.njit("UniTuple(f8[:], 2)(f8[:,:], i8, f8, f8)", nopython=True, nogil=True)
+#@numba.njit("UniTuple(f8[:], 2)(f8[:,:], i8, f8, f8)", nopython=True, nogil=True)
 def metropolis(spin_arr, times, BJ, energy):
     spin_arr = spin_arr.copy()
     net_spins = np.zeros(times-1)
@@ -87,4 +87,4 @@ ax.grid()
 fig.tight_layout()
 fig.suptitle(r'Evolution of Average Spin and Energy for $\beta J=$0.7', y=1.07, size=18)
 
-plt.show()
+plt.show
